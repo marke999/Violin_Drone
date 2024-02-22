@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Violin Drone</title>
+</head>
+<body>
+   <h2>Violin Drone</h2>
+   <style>
+   .parent-container {
+      display: grid;
+      place-items: center;
+   }
+   body  {background-color: lightblue; font-family: Arial}
+   h5 {text-align: right;} 
+   </style>
+
+   <p style="font-size: 15px"> This violin drone uses the 12-Tone Equal Temperament (TET) at concert pitch A4 = 440 Hertz.</p> 
+
+   <p style="font-size: 15px"> Create a chord drone according to key signature of the piece and play its scale and listen carefully for out-of-tune notes.  </p> 
+
+   <label for="note" style="font-size: 15px;">Choose a note:</label>
+   <select id="note" onchange="StartSound()">
+
+         <option value="3-G">3-G</option>
+         <option value="3-G#/Ab">3-G#/Ab</option>
+         <option value="3-A">3-A</option>
+         <option value="3-A#/Bb">3-A#/Bb</option>
+         <option value="3-B">3-B</option>
+         <option value="4-C">4-C</option>
+         <option value="4-C#/Db">4-C#/Db</option>
+         <option value="4-D">4-D</option>
+         <option value="4-D#/Eb">4-D#/Eb</option>
+         <option value="4-E">4-E</option>
+         <option value="4-F">4-F</option>
+         <option value="4-F#/Gb">4-F#/Gb</option>
+         <option value="4-G">4-G</option>
+         <option value="4-G#/Ab">4-G#/Ab</option>
+         <option value="4-A">4-A</option>
+         <option value="4-A#/Bb">4-A#/Bb</option>
+         <option value="4-B">4-B</option>
+         <option value="5-C">5-C</option>
+         <option value="5-C#/Db">5-C#/Db</option>
+         <option value="5-D">5-D</option>
+         <option value="5-D#/Eb">5-D#/Eb</option>
+         <option value="5-E">5-E</option>
+         <option value="5-F">5-F</option>
+         <option value="5-F#/Gb">5-F#/Gb</option>
+         <option value="5-G">5-G</option>
+         <option value="5-G#/Ab">5-G#/Ab</option>
+         <option value="5-A">5-A</option>
+         <option value="5-A#/Bb">5-A#/Bb</option>
+         <option value="5-B">5-B</option>
+         <option value="6-C">6-C</option>
+         <option value="6-C#/Db">6-C#/Db</option>
+         <option value="6-D">6-D</option>
+         <option value="6-D#/Eb">6-D#/Eb</option>
+         <option value="6-E">6-E</option>
+         <option value="6-F">6-F</option>
+         <option value="6-F#/Gb">6-F#/Gb</option>
+         <option value="6-G">6-G</option>
+         <option value="6-G#/Ab">6-G#/Ab</option>
+         <option value="6-A">6-A</option>
+         <option value="6-A#/Bb">6-A#/Bb</option>
+         <option value="6-B">6-B</option>
+         <option value="7-C">7-C</option>
+         <option value="7-C#/Db">7-C#/Db</option>
+         <option value="7-D">7-D</option>
+         <option value="7-D#/Eb">7-D#/Eb</option>
+         <option value="7-E">7-E</option>
+         <option value="7-F">7-F</option>
+         <option value="7-F#/Gb">7-F#/Gb</option>
+         <option value="7-G">7-G</option>
+         <option value="7-G#/Ab">7-G#/Ab</option>
+         <option value="7-A">7-A</option>
+         <option value="7-A#/Bb">7-A#/Bb</option>
+         <option value="7-B">7-B</option>
+         <option value="8-C">8-C</option>
+   </select>
+
+   <button id="StartButton">Start</button>
+   <button id="StopButton">Stop</button>
+
+   <label style="font-style: italic; font-size:12px">**Select the tonic/root of the scale/chord</label>
+
+   <div id="selectedValue"></div>
+
+   <script>
+      let variables = {
+         "3-G":196,
+         "3-G#/Ab":207.65,
+         "3-A":220,
+         "3-A#/Bb":233.08,
+         "3-B":246.94,
+         "4-C":261.63,
+         "4-C#/Db":277.18,
+         "4-D":293.66,
+         "4-D#/Eb":311.13,
+         "4-E":329.63,
+         "4-F":349.23,
+         "4-F#/Gb":369.99,
+         "4-G":392,
+         "4-G#/Ab":415.3,
+         "4-A":440,
+         "4-A#/Bb":466.16,
+         "4-B":493.88,
+         "5-C":523.25,
+         "5-C#/Db":554.37,
+         "5-D":587.33,
+         "5-D#/Eb":622.25,
+         "5-E":659.26,
+         "5-F":698.46,
+         "5-F#/Gb":739.99,
+         "5-G":783.99,
+         "5-G#/Ab":830.61,
+         "5-A":880,
+         "5-A#/Bb":932.33,
+         "5-B":987.77,
+         "6-C":1046.5,
+         "6-C#/Db":1108.73,
+         "6-D":1174.66,
+         "6-D#/Eb":1244.51,
+         "6-E":1318.51,
+         "6-F":1396.91,
+         "6-F#/Gb":1479.98,
+         "6-G":1567.98,
+         "6-G#/Ab":1661.22,
+         "6-A":1760,
+         "6-A#/Bb":1864.66,
+         "6-B":1975.53,
+         "7-C":2093,
+         "7-C#/Db":2217.46,
+         "7-D":2349.32,
+         "7-D#/Eb":2489.02,
+         "7-E":2637.02,
+         "7-F":2793.83,
+         "7-F#/Gb":2959.96,
+         "7-G":3135.96,
+         "7-G#/Ab":3322.44,
+         "7-A":3520,
+         "7-A#/Bb":3729.31,
+         "7-B":3951.07,
+         "8-C":4186.01,
+      };
+
+      // Create an AudioContext object
+      const audioContext = new AudioContext();
+      let oscillator;
+
+      function StartSound(frequency) {
+      // Get the selected frequency from the dropdown
+      let selectedVariable = document.getElementById("note").value
+
+      // Check if an oscillator is already playing
+      if (oscillator) {
+         oscillator.stop();
+         oscillator.disconnect();
+      }
+
+      // Retrieve the value from the variables object based on the selected variable
+      let frequencynote = variables[selectedVariable];
+
+      // Create a new oscillator node
+      oscillator = audioContext.createOscillator();
+      oscillator.type = 'sine'; // Set the oscillator type
+      oscillator.frequency.setValueAtTime(frequencynote, audioContext.currentTime); // Set Hertz     
+
+      // Connect the oscillator to the audio output (your speakers or headphones)
+      oscillator.connect(audioContext.destination);
+
+      // Start the oscillator
+      oscillator.start();
+   }
+      function StopSound(){
+      // Stop the oscillator
+      if (oscillator) {
+         oscillator.stop();
+         oscillator.disconnect();
+         oscillator = null;
+      } 
+   }
+
+      // Add event listeners to the buttons
+      const StartButton = document.getElementById('StartButton');
+      const StopButton = document.getElementById('StopButton');
+
+      // Resume audio context upon user interaction
+      document.addEventListener('click', function(){
+         if (audioContext.state === 'suspended') {
+            audioContext.resume();
+         }
+      });
+
+      // Start & Stop the sound when the button is clicked
+      StartButton.addEventListener('click', function() {
+         if (audioContext.state === 'suspended') {
+            audioContext.resume().then(() => {
+               StartSound();
+            });
+         } else {
+            StartSound();
+         }
+   });
+      StopButton.addEventListener('click', StopSound);
+</script>
+
+<!-- ############################### SECOND NOTE ################################## -->
+
+   <label for="note2" style="font-size: 15px;">Choose a note:</label>
+   <select id="note2" onchange="StartSound2()">
+
+         <option value="3-G">3-G</option>
+         <option value="3-G#/Ab">3-G#/Ab</option>
+         <option value="3-A">3-A</option>
+         <option value="3-A#/Bb">3-A#/Bb</option>
+         <option value="3-B">3-B</option>
+         <option value="4-C">4-C</option>
+         <option value="4-C#/Db">4-C#/Db</option>
+         <option value="4-D">4-D</option>
+         <option value="4-D#/Eb">4-D#/Eb</option>
+         <option value="4-E">4-E</option>
+         <option value="4-F">4-F</option>
+         <option value="4-F#/Gb">4-F#/Gb</option>
+         <option value="4-G">4-G</option>
+         <option value="4-G#/Ab">4-G#/Ab</option>
+         <option value="4-A">4-A</option>
+         <option value="4-A#/Bb">4-A#/Bb</option>
+         <option value="4-B">4-B</option>
+         <option value="5-C">5-C</option>
+         <option value="5-C#/Db">5-C#/Db</option>
+         <option value="5-D">5-D</option>
+         <option value="5-D#/Eb">5-D#/Eb</option>
+         <option value="5-E">5-E</option>
+         <option value="5-F">5-F</option>
+         <option value="5-F#/Gb">5-F#/Gb</option>
+         <option value="5-G">5-G</option>
+         <option value="5-G#/Ab">5-G#/Ab</option>
+         <option value="5-A">5-A</option>
+         <option value="5-A#/Bb">5-A#/Bb</option>
+         <option value="5-B">5-B</option>
+         <option value="6-C">6-C</option>
+         <option value="6-C#/Db">6-C#/Db</option>
+         <option value="6-D">6-D</option>
+         <option value="6-D#/Eb">6-D#/Eb</option>
+         <option value="6-E">6-E</option>
+         <option value="6-F">6-F</option>
+         <option value="6-F#/Gb">6-F#/Gb</option>
+         <option value="6-G">6-G</option>
+         <option value="6-G#/Ab">6-G#/Ab</option>
+         <option value="6-A">6-A</option>
+         <option value="6-A#/Bb">6-A#/Bb</option>
+         <option value="6-B">6-B</option>
+         <option value="7-C">7-C</option>
+         <option value="7-C#/Db">7-C#/Db</option>
+         <option value="7-D">7-D</option>
+         <option value="7-D#/Eb">7-D#/Eb</option>
+         <option value="7-E">7-E</option>
+         <option value="7-F">7-F</option>
+         <option value="7-F#/Gb">7-F#/Gb</option>
+         <option value="7-G">7-G</option>
+         <option value="7-G#/Ab">7-G#/Ab</option>
+         <option value="7-A">7-A</option>
+         <option value="7-A#/Bb">7-A#/Bb</option>
+         <option value="7-B">7-B</option>
+         <option value="8-C">8-C</option>
+   </select>
+   <button id="StartButton2">Start</button>
+   <button id="StopButton2">Stop</button>
+
+   <label style="font-style: italic; font-size:12px">**Select the major/minor third of the scale/chord </label>
+
+   <div id="selectedValue2"></div>
+
+   <script>
+      let variables2 = {
+
+         "3-G":196,
+         "3-G#/Ab":207.65,
+         "3-A":220,
+         "3-A#/Bb":233.08,
+         "3-B":246.94,
+         "4-C":261.63,
+         "4-C#/Db":277.18,
+         "4-D":293.66,
+         "4-D#/Eb":311.13,
+         "4-E":329.63,
+         "4-F":349.23,
+         "4-F#/Gb":369.99,
+         "4-G":392,
+         "4-G#/Ab":415.3,
+         "4-A":440,
+         "4-A#/Bb":466.16,
+         "4-B":493.88,
+         "5-C":523.25,
+         "5-C#/Db":554.37,
+         "5-D":587.33,
+         "5-D#/Eb":622.25,
+         "5-E":659.26,
+         "5-F":698.46,
+         "5-F#/Gb":739.99,
+         "5-G":783.99,
+         "5-G#/Ab":830.61,
+         "5-A":880,
+         "5-A#/Bb":932.33,
+         "5-B":987.77,
+         "6-C":1046.5,
+         "6-C#/Db":1108.73,
+         "6-D":1174.66,
+         "6-D#/Eb":1244.51,
+         "6-E":1318.51,
+         "6-F":1396.91,
+         "6-F#/Gb":1479.98,
+         "6-G":1567.98,
+         "6-G#/Ab":1661.22,
+         "6-A":1760,
+         "6-A#/Bb":1864.66,
+         "6-B":1975.53,
+         "7-C":2093,
+         "7-C#/Db":2217.46,
+         "7-D":2349.32,
+         "7-D#/Eb":2489.02,
+         "7-E":2637.02,
+         "7-F":2793.83,
+         "7-F#/Gb":2959.96,
+         "7-G":3135.96,
+         "7-G#/Ab":3322.44,
+         "7-A":3520,
+         "7-A#/Bb":3729.31,
+         "7-B":3951.07,
+         "8-C":4186.01,
+      };
+
+      // Create an AudioContext object
+      const audioContext2 = new AudioContext();
+      let oscillator2;
+
+      function StartSound2(frequency2) {
+      // Get the selected frequency from the dropdown
+      let selectedVariable2 = document.getElementById("note2").value
+
+      // Check if an oscillator is already playing
+      if (oscillator2) {
+         oscillator2.stop();
+         oscillator2.disconnect();
+      }
+
+      // Retrieve the value from the variables object based on the selected variable
+      let frequencynote2 = variables2[selectedVariable2];
+
+      // Create a new oscillator node
+      oscillator2 = audioContext2.createOscillator();
+      oscillator2.type = 'sine'; // Set the oscillator type
+      oscillator2.frequency.setValueAtTime(frequencynote2, audioContext2.currentTime); // Set Hertz     
+
+      // Connect the oscillator to the audio output (your speakers or headphones)
+      oscillator2.connect(audioContext2.destination);
+
+      // Start the oscillator
+      oscillator2.start();
+   }
+      function StopSound2(){
+      // Stop the oscillator
+      if (oscillator2) {
+         oscillator2.stop();
+         oscillator2.disconnect();
+         oscillator2 = null;
+      } 
+   }
+
+      // Add event listeners to the buttons
+      const StartButton2 = document.getElementById('StartButton2');
+      const StopButton2 = document.getElementById('StopButton2');
+
+      // Resume audio context upon user interaction
+      document.addEventListener('click', function(){
+         if (audioContext2.state === 'suspended') {
+            audioContext2.resume();
+         }
+      });
+
+      // Start & Stop the sound when the button is clicked
+      StartButton2.addEventListener('click', function() {
+         if (audioContext2.state === 'suspended') {
+            audioContext2.resume().then(() => {
+               StartSound2();
+            });
+         } else {
+            StartSound2();
+         }
+   });
+      StopButton2.addEventListener('click', StopSound2);
+</script>
+
+<!-- ############################### THIRD NOTE ################################## -->
+
+   <label for="note3" style="font-size: 15px;">Choose a note:</label>
+   <select id="note3" onchange="StartSound3()">
+
+         <option value="3-G">3-G</option>
+         <option value="3-G#/Ab">3-G#/Ab</option>
+         <option value="3-A">3-A</option>
+         <option value="3-A#/Bb">3-A#/Bb</option>
+         <option value="3-B">3-B</option>
+         <option value="4-C">4-C</option>
+         <option value="4-C#/Db">4-C#/Db</option>
+         <option value="4-D">4-D</option>
+         <option value="4-D#/Eb">4-D#/Eb</option>
+         <option value="4-E">4-E</option>
+         <option value="4-F">4-F</option>
+         <option value="4-F#/Gb">4-F#/Gb</option>
+         <option value="4-G">4-G</option>
+         <option value="4-G#/Ab">4-G#/Ab</option>
+         <option value="4-A">4-A</option>
+         <option value="4-A#/Bb">4-A#/Bb</option>
+         <option value="4-B">4-B</option>
+         <option value="5-C">5-C</option>
+         <option value="5-C#/Db">5-C#/Db</option>
+         <option value="5-D">5-D</option>
+         <option value="5-D#/Eb">5-D#/Eb</option>
+         <option value="5-E">5-E</option>
+         <option value="5-F">5-F</option>
+         <option value="5-F#/Gb">5-F#/Gb</option>
+         <option value="5-G">5-G</option>
+         <option value="5-G#/Ab">5-G#/Ab</option>
+         <option value="5-A">5-A</option>
+         <option value="5-A#/Bb">5-A#/Bb</option>
+         <option value="5-B">5-B</option>
+         <option value="6-C">6-C</option>
+         <option value="6-C#/Db">6-C#/Db</option>
+         <option value="6-D">6-D</option>
+         <option value="6-D#/Eb">6-D#/Eb</option>
+         <option value="6-E">6-E</option>
+         <option value="6-F">6-F</option>
+         <option value="6-F#/Gb">6-F#/Gb</option>
+         <option value="6-G">6-G</option>
+         <option value="6-G#/Ab">6-G#/Ab</option>
+         <option value="6-A">6-A</option>
+         <option value="6-A#/Bb">6-A#/Bb</option>
+         <option value="6-B">6-B</option>
+         <option value="7-C">7-C</option>
+         <option value="7-C#/Db">7-C#/Db</option>
+         <option value="7-D">7-D</option>
+         <option value="7-D#/Eb">7-D#/Eb</option>
+         <option value="7-E">7-E</option>
+         <option value="7-F">7-F</option>
+         <option value="7-F#/Gb">7-F#/Gb</option>
+         <option value="7-G">7-G</option>
+         <option value="7-G#/Ab">7-G#/Ab</option>
+         <option value="7-A">7-A</option>
+         <option value="7-A#/Bb">7-A#/Bb</option>
+         <option value="7-B">7-B</option>
+         <option value="8-C">8-C</option>
+   </select>
+
+   <button id="StartButton3">Start</button>
+   <button id="StopButton3">Stop</button>
+
+   <label style="font-style: italic; font-size:12px">**Select the perfect fifth of the scale/chord </label>
+
+   <div id="selectedValue3"></div>
+
+   <script>
+      let variables3 = {
+
+         "3-G":196,
+         "3-G#/Ab":207.65,
+         "3-A":220,
+         "3-A#/Bb":233.08,
+         "3-B":246.94,
+         "4-C":261.63,
+         "4-C#/Db":277.18,
+         "4-D":293.66,
+         "4-D#/Eb":311.13,
+         "4-E":329.63,
+         "4-F":349.23,
+         "4-F#/Gb":369.99,
+         "4-G":392,
+         "4-G#/Ab":415.3,
+         "4-A":440,
+         "4-A#/Bb":466.16,
+         "4-B":493.88,
+         "5-C":523.25,
+         "5-C#/Db":554.37,
+         "5-D":587.33,
+         "5-D#/Eb":622.25,
+         "5-E":659.26,
+         "5-F":698.46,
+         "5-F#/Gb":739.99,
+         "5-G":783.99,
+         "5-G#/Ab":830.61,
+         "5-A":880,
+         "5-A#/Bb":932.33,
+         "5-B":987.77,
+         "6-C":1046.5,
+         "6-C#/Db":1108.73,
+         "6-D":1174.66,
+         "6-D#/Eb":1244.51,
+         "6-E":1318.51,
+         "6-F":1396.91,
+         "6-F#/Gb":1479.98,
+         "6-G":1567.98,
+         "6-G#/Ab":1661.22,
+         "6-A":1760,
+         "6-A#/Bb":1864.66,
+         "6-B":1975.53,
+         "7-C":2093,
+         "7-C#/Db":2217.46,
+         "7-D":2349.32,
+         "7-D#/Eb":2489.02,
+         "7-E":2637.02,
+         "7-F":2793.83,
+         "7-F#/Gb":2959.96,
+         "7-G":3135.96,
+         "7-G#/Ab":3322.44,
+         "7-A":3520,
+         "7-A#/Bb":3729.31,
+         "7-B":3951.07,
+         "8-C":4186.01,
+      };
+
+      // Create an AudioContext object
+      const audioContext3 = new AudioContext();
+      let oscillator3;
+
+      function StartSound3(frequency3) {
+      // Get the selected frequency from the dropdown
+      let selectedVariable3 = document.getElementById("note3").value
+
+      // Check if an oscillator is already playing
+      if (oscillator3) {
+         oscillator3.stop();
+         oscillator3.disconnect();
+      }
+
+      // Retrieve the value from the variables object based on the selected variable
+      let frequencynote3 = variables3[selectedVariable3];
+
+      // Create a new oscillator node
+      oscillator3 = audioContext3.createOscillator();
+      oscillator3.type = 'sine'; // Set the oscillator type
+      oscillator3.frequency.setValueAtTime(frequencynote3, audioContext3.currentTime); // Set Hertz     
+
+      // Connect the oscillator to the audio output (your speakers or headphones)
+      oscillator3.connect(audioContext3.destination);
+
+      // Start the oscillator
+      oscillator3.start();
+   }
+      function StopSound3(){
+      // Stop the oscillator
+      if (oscillator3) {
+         oscillator3.stop();
+         oscillator3.disconnect();
+         oscillator3 = null;
+      } 
+   }
+
+      // Add event listeners to the buttons
+      const StartButton3 = document.getElementById('StartButton3');
+      const StopButton3 = document.getElementById('StopButton3');
+
+      // Resume audio context upon user interaction
+      document.addEventListener('click', function(){
+         if (audioContext3.state === 'suspended') {
+            audioContext3.resume();
+         }
+      });
+
+      // Start & Stop the sound when the button is clicked
+      StartButton3.addEventListener('click', function() {
+         if (audioContext3.state === 'suspended') {
+            audioContext3.resume().then(() => {
+               StartSound3();
+            });
+         } else {
+            StartSound3();
+         }
+   });
+      StopButton3.addEventListener('click', StopSound3);
+</script>
+
+<!-- ################################# METRONOME ################################### -->
+
+   <h2>Metronome</h2>
+   <style>
+   .parent-container {
+      display: grid;
+      place-items: center;
+   }
+</style>
+
+<label for="tempo" style="font-size: 15px;">Tempo: </label>
+<input type="number" id="tempo" min="20" max="300" value="120">
+
+<label for="beat" style="font-size: 15px;">Beat: </label>
+<input type="number" id="beat" min="1" max="16" value="4">
+
+<button id="StartMetronome">Start </button>
+<button id="StopMetronome">Stop</button>
+
+<label for="volume" style="font-size: 15px;">Volume:</label>
+<input type="range" id="volume" min="0" max="5" step="0.1" value="1">
+
+<script>
+   let intervalId;
+   let isPlaying = false;
+   let audioContextMetronome;
+   let gainNode;
+
+   function playSound() {
+      const tempo = parseInt(document.getElementById('tempo').value);
+      const beat = parseInt(document.getElementById('beat').value);
+      const interval = (60 / tempo) * 1000;
+
+      if (isPlaying) {
+         clearInterval(intervalId);
+         isPlaying = false;
+      }  else {
+         audioContextMetronome = new (window.AudioContext || window.webkitAudioContext)();
+         gainNode = audioContextMetronome.createGain();
+         const volumeInput = document.getElementById('volume');
+         const volume = parseFloat(volumeInput.value);
+         gainNode.gain.value = volume;
+         gainNode.connect(audioContextMetronome.destination);
+
+         let count = 1;
+
+         intervalId = setInterval(() => {
+            const oscillatorMetronome = audioContextMetronome.createOscillator();
+            oscillatorMetronome.connect(gainNode);
+
+            oscillatorMetronome.frequency.value = count % beat === 1 ? 1500 : 750;
+            oscillatorMetronome.start();
+            oscillatorMetronome.stop(audioContextMetronome.currentTime + 0.1);
+     
+            count++;
+         }, interval);
+
+         isPlaying = true;
+      }
+   }
+
+   function stopSound() {
+      clearInterval(intervalId);
+      isPlaying = false;
+      audioContextMetronome.close(); // Close the audio context to release resources
+   }
+
+   function updateVolume() {
+      const volume = parseFloat(this.value);
+      gainNode.gain.value = volume;
+   }
+
+   const StartMetronome = document.getElementById('StartMetronome');
+   const StopMetronome = document.getElementById('StopMetronome');
+   const volumeInput = document.getElementById('volume');
+
+   StartMetronome.addEventListener('click', playSound);
+   StopMetronome.addEventListener('click', stopSound);
+   volumeInput.addEventListener('input', updateVolume);
+
+</script>
+
+<style>
+   /* Add the following styles for the "Developed By:" line */
+   #developer-info {
+      position: fixed;
+      bottom: 50px;
+      left: 10px; /* Change 'right' to 'left' */
+      font-size: 16px;
+      text-align: left; /* Align text to the left */
+      padding: 5px;
+   }
+   
+</style>
+
+<div id="developer-info">
+    <p style="margin: 0;"><b>Developed By: Mark Eliezer Arnoco </b> || Version: 2.03 || Last Update: November 29, 2023 </p>
+</div>
+   
+</body>
+</html>
